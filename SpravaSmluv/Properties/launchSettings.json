@@ -3,8 +3,8 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:36505",
-      "sslPort": 44354
+      "applicationUrl": "http://localhost:41067",
+      "sslPort": 44361
     }
   },
   "profiles": {
@@ -18,6 +18,7 @@
     },
     "SpravaSmluv": {
       "commandName": "Project",
+      "dotnetRunMessages": "true",
       "launchBrowser": true,
       "applicationUrl": "https://localhost:5001;http://localhost:5000",
       "environmentVariables": {
