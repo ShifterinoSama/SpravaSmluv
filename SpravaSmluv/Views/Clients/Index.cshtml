@@ -6,60 +6,83 @@
 
 <h1>Klienti</h1>
 
+
 <p>
-    <a asp-action="Create">Create New</a>
+    @Html.ActionLink("Vytvořit nový profil klienta", "Create")
+    @*<a asp-action="Create">Create New</a>*@
 </p>
+
+@using (Html.BeginForm())
+{
+    <p>
+        @Html.TextBox("SearchString")
+        <input type="submit" value="Vyhledat" />
+    </p>
+
+    <p>
+        Počet výsledků: @Model.Count()
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.FirstName)
+                @Html.ActionLink("Jméno", "Index", new { sortOrder = ViewBag.FirstNameSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LastName)
+                @Html.ActionLink("Přijmení", "Index", new { sortOrder = ViewBag.LastNameSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Email)
+                @Html.ActionLink("Email", "Index", new { sortOrder = ViewBag.EmailSortParm })
             </th>
+            @*<th>
+                @Html.ActionLink("Telefonní číslo", "Index", new { sortOrder = ViewBag.PhoneNumberSortParm })
+            </th>*@
             <th>
-                @Html.DisplayNameFor(model => model.PhoneNumber)
+                @Html.ActionLink("Rodné číslo", "Index", new { sortOrder = ViewBag.PersonalIdNumberSortParm })
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.PersonalIdentificationNumber)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Age)
-            </th>
+            @*<th>
+                @Html.ActionLink("Věk", "Index", new { sortOrder = ViewBag.AgeSortParm })
+            </th>*@
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LastName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Email)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.PhoneNumber)
+                </td>*@
+                <td>
+                    @Html.DisplayFor(modelItem => item.PersonalIdentificationNumber)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.Age)
+                </td>*@
             <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
+                <a asp-action="Edit" asp-route-id="@item.Id">Upravit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Detaily</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Odstranit</a>
             </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Email)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PhoneNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.PersonalIdentificationNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Age)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+            </tr>
+        }
     </tbody>
 </table>
+
+@using (Html.BeginForm("Export", "Clients", FormMethod.Post))
+{
+    <button type="submit" class="btn btn-success">
+        <i class="glyphicon glyphicon-download"></i> Stáhnout CSV
+    </button>
+}

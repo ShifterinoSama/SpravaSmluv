@@ -7,53 +7,87 @@
 <h1>Smlouvy</h1>
 
 <p>
-    <a asp-action="Create">Create New</a>
+    @Html.ActionLink("Vytvořit novou smlouvu", "Create")
+    @*<a asp-action="Create">Create New</a>*@
 </p>
+
+@using (Html.BeginForm())
+{
+    <p>
+        @Html.TextBox("SearchString")
+        <input type="submit" value="Vyhledat" />
+    </p>
+
+    <p>
+        Počet výsledků: @Model.Count()
+    </p>
+}
+
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.EvidenceNumber)
+                @Html.ActionLink("Evidenční číslo", "Index", new { sortOrder = ViewBag.EvidenceNumberSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Institution)
+                @Html.ActionLink("Instituce", "Index", new { sortOrder = ViewBag.InstitutionSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ClosureDate)
+                @Html.ActionLink("Klient", "Index", new { sortOrder = ViewBag.ClientSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ExpirationDate)
+                @Html.ActionLink("Správce smlouvy", "Index", new { sortOrder = ViewBag.ContractManagerSortParm })
+            </th>
+            @*<th>
+                @Html.ActionLink("Datum uzavření", "Index", new { sortOrder = ViewBag.ClosureDateSortParm })
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.TerminationDate)
+                @Html.ActionLink("Datum vypršení platnosti", "Index", new { sortOrder = ViewBag.ExpirationDateSortParm })
             </th>
+            <th>
+                @Html.ActionLink("Datum ukončení", "Index", new { sortOrder = ViewBag.TerminationDateSortParm })
+            </th>*@
+            
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.EvidenceNumber)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Institution)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ClosureDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpirationDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.TerminationDate)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ID">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EvidenceNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Institution)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Client.FullName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ContractManager.FullName)
+                </td>
+                @*<td>
+                    @Html.DisplayFor(modelItem => item.ClosureDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExpirationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.TerminationDate)
+                </td>*@
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Upravit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Detaily</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Odstranit</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+@using (Html.BeginForm("Export", "Contracts", FormMethod.Post))
+{
+    <button type="submit" class="btn btn-success">
+        <i class="glyphicon glyphicon-download"></i> Stáhnout CSV
+    </button>
+} 

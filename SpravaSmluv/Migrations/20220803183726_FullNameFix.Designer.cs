@@ -9,9 +9,9 @@ using SpravaSmluv.Data;
 
 namespace SpravaSmluv.Migrations
 {
-    [DbContext(typeof(SpravaSmluvContext))]
-    [Migration("20220729035732_ErrorFix4")]
-    partial class ErrorFix4
+    [DbContext(typeof(ContractManagmentContext))]
+    [Migration("20220803183726_FullNameFix")]
+    partial class FullNameFix
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -21,9 +21,24 @@ namespace SpravaSmluv.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("AdvisorContract", b =>
+                {
+                    b.Property<int>("AdvisorsId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ContractsId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AdvisorsId", "ContractsId");
+
+                    b.HasIndex("ContractsId");
+
+                    b.ToTable("AdvisorContract");
+                });
+
             modelBuilder.Entity("SpravaSmluv.Models.Advisor", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -33,10 +48,13 @@ namespace SpravaSmluv.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
@@ -45,20 +63,29 @@ namespace SpravaSmluv.Migrations
 
                     b.Property<string>("PersonalIdentificationNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("PersonalIdentificationNumber")
+                        .IsUnique();
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique();
 
                     b.ToTable("Advisors");
                 });
 
             modelBuilder.Entity("SpravaSmluv.Models.Client", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -68,10 +95,13 @@ namespace SpravaSmluv.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FullName")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("LastName")
@@ -80,36 +110,45 @@ namespace SpravaSmluv.Migrations
 
                     b.Property<string>("PersonalIdentificationNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.ToTable("Client");
+                    b.HasIndex("Email")
+                        .IsUnique();
+
+                    b.HasIndex("PersonalIdentificationNumber")
+                        .IsUnique();
+
+                    b.HasIndex("PhoneNumber")
+                        .IsUnique();
+
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("SpravaSmluv.Models.Contract", b =>
                 {
-                    b.Property<int>("ID")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int?>("ClientID")
+                    b.Property<int>("ClientId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("ClosureDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ContractManagerID")
+                    b.Property<int>("ContractManagerId")
                         .HasColumnType("int");
 
                     b.Property<string>("EvidenceNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2");
@@ -118,75 +157,60 @@ namespace SpravaSmluv.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("TerminationDate")
+                    b.Property<DateTime?>("TerminationDate")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("ID");
+                    b.HasKey("Id");
 
-                    b.HasIndex("ClientID");
+                    b.HasIndex("ClientId");
 
-                    b.HasIndex("ContractManagerID");
+                    b.HasIndex("ContractManagerId");
+
+                    b.HasIndex("EvidenceNumber")
+                        .IsUnique()
+                        .HasFilter("[EvidenceNumber] IS NOT NULL");
 
                     b.ToTable("Contracts");
                 });
 
-            modelBuilder.Entity("SpravaSmluv.Models.ContractAdvisor", b =>
+            modelBuilder.Entity("AdvisorContract", b =>
                 {
-                    b.Property<int>("ContractId")
-                        .HasColumnType("int");
+                    b.HasOne("SpravaSmluv.Models.Advisor", null)
+                        .WithMany()
+                        .HasForeignKey("AdvisorsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Property<int>("AdvisorId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ContractId", "AdvisorId");
-
-                    b.HasIndex("AdvisorId");
-
-                    b.ToTable("ContractAdvisors");
+                    b.HasOne("SpravaSmluv.Models.Contract", null)
+                        .WithMany()
+                        .HasForeignKey("ContractsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("SpravaSmluv.Models.Contract", b =>
                 {
                     b.HasOne("SpravaSmluv.Models.Client", "Client")
-                        .WithMany()
-                        .HasForeignKey("ClientID");
+                        .WithMany("Contracts")
+                        .HasForeignKey("ClientId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("SpravaSmluv.Models.Advisor", "ContractManager")
                         .WithMany()
-                        .HasForeignKey("ContractManagerID");
+                        .HasForeignKey("ContractManagerId")
+                        .HasConstraintName("FK_CONTRACT_ADVISOR_CONTRACT_MANAGER")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
                     b.Navigation("Client");
 
                     b.Navigation("ContractManager");
                 });
 
-            modelBuilder.Entity("SpravaSmluv.Models.ContractAdvisor", b =>
+            modelBuilder.Entity("SpravaSmluv.Models.Client", b =>
                 {
-                    b.HasOne("SpravaSmluv.Models.Advisor", "Advisor")
-                        .WithMany("ContractAdvisors")
-                        .HasForeignKey("AdvisorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("SpravaSmluv.Models.Contract", "Contract")
-                        .WithMany("ContractAdvisors")
-                        .HasForeignKey("ContractId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Advisor");
-
-                    b.Navigation("Contract");
-                });
-
-            modelBuilder.Entity("SpravaSmluv.Models.Advisor", b =>
-                {
-                    b.Navigation("ContractAdvisors");
-                });
-
-            modelBuilder.Entity("SpravaSmluv.Models.Contract", b =>
-                {
-                    b.Navigation("ContractAdvisors");
+                    b.Navigation("Contracts");
                 });
 #pragma warning restore 612, 618
         }

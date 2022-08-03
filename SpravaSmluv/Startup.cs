@@ -27,7 +27,7 @@ namespace SpravaSmluv
         {
             services.AddControllersWithViews();
 
-            services.AddDbContext<SpravaSmluvContext>(options =>
+            services.AddDbContext<ContractManagmentContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("SpravaSmluvContext")));
         }
 

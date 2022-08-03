@@ -1,13 +1,13 @@
 ﻿@model SpravaSmluv.Models.Advisor
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "Detaily poradce";
 }
 
-<h1>Details</h1>
+<h1>Detaily poradce</h1>
 
 <div>
-    <h4>Advisor</h4>
+    <h4>Poradce</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -46,9 +46,20 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Age)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Contracts)
+        </dt>
+        <dd class="col-sm-10">
+            @foreach (var contract in Model.Contracts)
+            {
+                @Html.DisplayFor(model => contract.EvidenceNumber)<br />
+
+            }
+        </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.ID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+
+    <a asp-action="Edit" asp-route-id="@Model.Id">Upravit</a> |
+    <a asp-action="Index">Zpátky na výpis</a>
 </div>

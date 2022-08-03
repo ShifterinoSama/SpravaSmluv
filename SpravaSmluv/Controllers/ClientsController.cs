@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -12,17 +13,95 @@ namespace SpravaSmluv.Controllers
 {
     public class ClientsController : Controller
     {
-        private readonly SpravaSmluvContext _context;
+        private readonly ContractManagmentContext _context;
 
-        public ClientsController(SpravaSmluvContext context)
+        public ClientsController(ContractManagmentContext context)
         {
             _context = context;
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(string sortOrder, string searchString)
         {
-            return View(await _context.Client.ToListAsync());
+            var clients = from c in _context.Clients select c;
+            if (!String.IsNullOrEmpty(searchString))
+            {
+                clients = clients.Where(c => c.FirstName.Contains(searchString) || c.LastName.Contains(searchString) || c.Email.Contains(searchString) || c.PhoneNumber.Contains(searchString));
+            }
+            IQueryable<Client> orderedClients = GetOrderedList(sortOrder, clients);
+            return View(await orderedClients.ToListAsync());
+        }
+
+        private IQueryable<Client> GetOrderedList(string sortOrder, IQueryable<Client> clients)
+        {
+            string sortFormat = "";
+            if (sortOrder == null)
+            {
+                sortFormat = "desc";
+            }
+            else
+            {
+                if (sortOrder[^3] == 'a' && sortOrder != null)
+                {
+                    sortFormat = "asc";
+                }
+                else
+                {
+                    sortFormat = "desc";
+                }
+            }
+            ViewBag.FirstNameSortParm = !(sortFormat == "desc") ? "firstname_desc" : "firstname_asc";
+            ViewBag.LastNameSortParm = !(sortFormat == "desc") ? "lastname_desc" : "lastname_asc";
+            ViewBag.EmailSortParm = !(sortFormat == "desc") ? "email_desc" : "email_asc";
+            //ViewBag.PhoneNumberSortParm = !(sortFormat == "desc") ? "phonenumber_desc" : "phonenumber_asc";
+            ViewBag.PersonalIdNumberSortParm = !(sortFormat == "desc") ? "personalidnumber_desc" : "personalidnumber_asc";
+            //ViewBag.AgeSortParm = !(sortFormat == "desc") ? "age_desc" : "age_asc";
+
+            clients = sortOrder switch
+            {
+                "firstname_desc" => clients.OrderByDescending(c => c.FirstName),
+                "lastname_desc" => clients.OrderByDescending(c => c.LastName),
+                "email_desc" => clients.OrderByDescending(c => c.Email),
+                //"phonenumber_desc" => clients.OrderByDescending(c => c.PhoneNumber),
+                "personalidnumber_desc" => clients.OrderByDescending(c => c.PersonalIdentificationNumber),
+                //"age_desc" => clients.OrderByDescending(c => c.Age),
+                "firstname_asc" => clients.OrderBy(c => c.FirstName),
+                "lastname_asc" => clients.OrderBy(c => c.LastName),
+                "email_asc" => clients.OrderBy(c => c.Email),
+                //"phonenumber_asc" => clients.OrderBy(c => c.PhoneNumber),
+                "personalidnumber_asc" => clients.OrderBy(c => c.PersonalIdentificationNumber),
+                //"age_asc" => clients.OrderBy(c => c.Age),
+                _ => clients.OrderBy(c => c.FirstName),
+            };
+            return clients;
+        }
+
+        [Microsoft.AspNetCore.Mvc.HttpPost]
+        public FileResult Export()
+        {
+
+            List<object> clients = (from client in _context.Clients.ToList()
+                                      select new[] {client.Id.ToString(),
+                                                      client.FirstName,
+                                                      client.LastName,
+                                                      client.Email,
+                                                      client.PhoneNumber.ToString(),
+                                                      client.PersonalIdentificationNumber,
+                                                      client.Age.ToString()}).ToList<object>();
+            clients.Insert(0, new string[7] { "Id klienta", "Jméno", "Přijmení", "Email", "Telefonní číslo", "Rodné číslo", "Věk"});
+            StringBuilder sb = new();
+            for (int i = 0; i < clients.Count; i++)
+            {
+                string[] client = (string[])clients[i];
+                for (int j = 0; j < client.Length; j++)
+                {
+                    sb.Append(client[j] + ',');
+                }
+
+                sb.Append("\r\n");
+            }
+
+            return File(Encoding.UTF8.GetBytes(sb.ToString()), "text/csv", "Clients.csv");
         }
 
         // GET: Clients/Details/5
@@ -33,8 +112,9 @@ namespace SpravaSmluv.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Client
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var client = await _context.Clients
+                .Include("Contracts")
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (client == null)
             {
                 return NotFound();
@@ -73,7 +153,7 @@ namespace SpravaSmluv.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Client.FindAsync(id);
+            var client = await _context.Clients.FindAsync(id);
             if (client == null)
             {
                 return NotFound();
@@ -86,9 +166,9 @@ namespace SpravaSmluv.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ID,FirstName,LastName,Email,PhoneNumber,PersonalIdentificationNumber,Age")] Client client)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,Email,PhoneNumber,PersonalIdentificationNumber,Age")] Client client)
         {
-            if (id != client.ID)
+            if (id != client.Id)
             {
                 return NotFound();
             }
@@ -102,7 +182,7 @@ namespace SpravaSmluv.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ClientExists(client.ID))
+                    if (!ClientExists(client.Id))
                     {
                         return NotFound();
                     }
@@ -124,8 +204,9 @@ namespace SpravaSmluv.Controllers
                 return NotFound();
             }
 
-            var client = await _context.Client
-                .FirstOrDefaultAsync(m => m.ID == id);
+            var client = await _context.Clients
+                .Include("Contracts")
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (client == null)
             {
                 return NotFound();
@@ -139,15 +220,15 @@ namespace SpravaSmluv.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var client = await _context.Client.FindAsync(id);
-            _context.Client.Remove(client);
+            var client = await _context.Clients.FindAsync(id);
+            _context.Clients.Remove(client);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ClientExists(int id)
         {
-            return _context.Client.Any(e => e.ID == id);
+            return _context.Clients.Any(e => e.Id == id);
         }
     }
 }

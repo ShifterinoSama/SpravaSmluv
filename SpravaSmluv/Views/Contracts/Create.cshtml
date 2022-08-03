@@ -1,26 +1,33 @@
 ﻿@model SpravaSmluv.Models.Contract
 
+
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Vytvořit smlouvu";
+    List<Advisor> advisors = ViewData["Advisors"] as List<Advisor>;
+    List<Client> clients = ViewData["Clients"] as List<Client>;
+
 }
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 
-<h1>Create</h1>
+<h1>Vytvořit smlouvu</h1>
 
-<h4>Contract</h4>
+<h4>Smlouva</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            @*<div class="form-group">
+            <label asp-for="EvidenceNumber" class="control-label"></label>
+            <input asp-for="EvidenceNumber" class="form-control" />
+            <span asp-validation-for="EvidenceNumber" class="text-danger"></span>
+        </div>*@
             <div class="form-group">
-                <label asp-for="EvidenceNumber" class="control-label"></label>
-                <input asp-for="EvidenceNumber" class="form-control" />
-                <span asp-validation-for="EvidenceNumber" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Institution" class="control-label"></label>
-                <input asp-for="Institution" class="form-control" />
-                <span asp-validation-for="Institution" class="text-danger"></span>
+                @Html.LabelFor(c => c.Institution)
+                <div class="input-group">
+                    @Html.TextBoxFor(c => c.Institution, new { @class = "form-control", @placeholder = "Název instituce", @required = "required" })
+                    <span asp-validation-for="Institution" class="text-danger"></span>
+                </div>
             </div>
             <div class="form-group">
                 <label asp-for="ClosureDate" class="control-label"></label>
@@ -33,20 +40,37 @@
                 <span asp-validation-for="ExpirationDate" class="text-danger"></span>
             </div>
             <div class="form-group">
+                @*@Html.LabelFor(c => c.TerminationDate)
+                @Html.TextBoxFor(c => c.TerminationDate, "{0:dd/MM/yyyy}", new { @class = "datefield form-control", @placeholder = "Enter start date..." })*@
                 <label asp-for="TerminationDate" class="control-label"></label>
                 <input asp-for="TerminationDate" class="form-control" />
                 <span asp-validation-for="TerminationDate" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                @*<label asp-for="Client" class="control-label"></label>*@
+                @Html.LabelFor(c => c.Client)
+                @Html.DropDownListFor(c => c.ClientId, new SelectList(clients, "Id", "FullName"), "-Vyberte klienta-", new { id = "clientId", @class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(c => c.ContractManager)
+                @Html.DropDownListFor(c => c.ContractManagerId, new SelectList(advisors, "Id", "FullName"), "-Vyberte spravce smlouvy-", new {@class = "form-control" })
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(c => c.Advisors)
+                @Html.ListBox("advisorIds", new MultiSelectList(advisors, "Id", "FullName"), new { id = "advisor", @class = "form-control", multiple = "multiple" })
+            </div>
+            
+            <div class="form-group">
+                <input type="submit" value="Vytvořit" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Zpátky na výpis</a>
 </div>
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

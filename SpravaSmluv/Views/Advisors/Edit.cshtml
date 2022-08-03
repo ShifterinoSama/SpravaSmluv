@@ -1,57 +1,57 @@
 ﻿@model SpravaSmluv.Models.Advisor
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Upravit";
 }
 
-<h1>Edit</h1>
+<h1>Upravit</h1>
 
-<h4>Advisor</h4>
+<h4>Poradce</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="ID" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
+                @Html.LabelFor(ad => ad.FirstName)
+                @Html.TextBoxFor(ad => ad.FirstName, new { @class = "form-control" })
                 <span asp-validation-for="FirstName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
+                @Html.LabelFor(ad => ad.LastName)
+                @Html.TextBoxFor(ad => ad.LastName, new { @class = "form-control" })
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
+                @Html.LabelFor(ad => ad.Email)
+                @Html.TextBoxFor(ad => ad.Email, new { @type = "email", @class = "form-control", title = "Zadejte email v platném formátu!" })
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PhoneNumber" class="control-label"></label>
-                <input asp-for="PhoneNumber" class="form-control" />
+                @Html.LabelFor(ad => ad.PhoneNumber)
+                @Html.TextBoxFor(ad => ad.PhoneNumber, new { @class = "form-control" })
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="PersonalIdentificationNumber" class="control-label"></label>
-                <input asp-for="PersonalIdentificationNumber" class="form-control" />
+                @Html.LabelFor(ad => ad.PersonalIdentificationNumber)
+                @Html.TextBoxFor(ad => ad.PersonalIdentificationNumber, new { @class = "form-control" })
                 <span asp-validation-for="PersonalIdentificationNumber" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Age" class="control-label"></label>
-                <input asp-for="Age" class="form-control" />
+                @Html.LabelFor(ad => ad.Age)
+                @Html.EditorFor(ad => ad.Age, new { htmlAttributes = new { @class = "form-control", @type = "number" } })
                 <span asp-validation-for="Age" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Uložit" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Zpátky na výpis</a>
 </div>
 
 @section Scripts {
