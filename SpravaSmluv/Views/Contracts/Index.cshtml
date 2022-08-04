@@ -13,10 +13,12 @@
 
 @using (Html.BeginForm())
 {
-    <p>
-        @Html.TextBox("SearchString")
-        <input type="submit" value="Vyhledat" />
-    </p>
+<p>
+    @Html.DropDownList("filterString", new SelectList(ViewBag.FilterList), "-Vyberte filtr vyhledávání-",new {@class = "form-control" })
+    <input type="hidden" />
+    @Html.TextBox("searchString")
+    <input type="submit" value="Vyhledat" />
+</p>
 
     <p>
         Počet výsledků: @Model.Count()

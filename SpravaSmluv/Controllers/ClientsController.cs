@@ -138,6 +138,12 @@ namespace SpravaSmluv.Controllers
         {
             if (ModelState.IsValid)
             {
+                bool isEmailTaken = _context.Clients.Any(c => c.Email == client.Email);
+                if (isEmailTaken)
+                {
+                    this.ModelState.AddModelError("Email", "Tento email již někdo používá!");
+                    return View(client);
+                }
                 _context.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -177,6 +183,12 @@ namespace SpravaSmluv.Controllers
             {
                 try
                 {
+                    bool isEmailTaken = _context.Clients.Any(c => c.Email == client.Email);
+                    if (isEmailTaken)
+                    {
+                        this.ModelState.AddModelError("Email", "Tento email již někdo používá!");
+                        return View(client);
+                    }
                     _context.Update(client);
                     await _context.SaveChangesAsync();
                 }

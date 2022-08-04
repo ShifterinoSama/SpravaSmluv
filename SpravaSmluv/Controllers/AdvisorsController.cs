@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using SpravaSmluv.Data;
-using SpravaSmluv.Models;
-
-namespace SpravaSmluv.Views
+﻿namespace SpravaSmluv.Views
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Rendering;
+    using Microsoft.EntityFrameworkCore;
+    using SpravaSmluv.Data;
+    using SpravaSmluv.Models;
+
     public class AdvisorsController : Controller
     {
         private readonly ContractManagmentContext _context;

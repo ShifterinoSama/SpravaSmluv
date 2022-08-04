@@ -18,26 +18,46 @@ namespace SpravaSmluv.Controllers
     {
         private readonly ContractManagmentContext _context;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ContractsController"/> class.
+        /// </summary>
+        /// <param name="context"></param>
         public ContractsController(ContractManagmentContext context)
         {
             _context = context;
         }
 
         // GET: Contracts
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string filterString)
         {
             var contracts = from c in _context.Contracts.Include("Client").Include("Advisors").Include("ContractManager") select c;
-            if (!String.IsNullOrEmpty(searchString))
+            ViewBag.FilterList = new List<string>() {"Evidenční číslo", "Instituce", "Jméno klienta", "Jméno správce smlouvy" };
+
+            if (!string.IsNullOrEmpty(searchString))
             {
-                contracts =  contracts.Where(c => c.EvidenceNumber.Contains(searchString) || c.Institution.Contains(searchString) || c.Client.FullName.Contains(searchString) || c.ContractManager.FullName.Contains(searchString));
+                contracts = GetSearchItems(searchString, filterString, contracts);
             }
+
             IQueryable<Contract> orderdContracts = GetOrderedList(sortOrder, contracts);
             return View(await orderdContracts.ToListAsync());
         }
 
+        private static IQueryable<Contract> GetSearchItems(string searchString, string filterString, IQueryable<Contract> contracts)
+        {
+            contracts = filterString switch
+            {
+                "Evidenční číslo" => contracts.Where(c => c.EvidenceNumber.Contains(searchString)),
+                "Instituce" => contracts.Where(c => c.Institution.Contains(searchString)),
+                "Jméno klienta" => contracts.Where(c => c.Client.FullName.Contains(searchString)),
+                "Jméno správce smlouvy" => contracts.Where(c => c.ContractManager.FullName.Contains(searchString)),
+                _ => contracts.Where(c => c.EvidenceNumber.Contains(searchString) || c.Institution.Contains(searchString) || c.Client.FullName.Contains(searchString) || c.ContractManager.FullName.Contains(searchString)),
+            };
+            return contracts;
+        }
+
         private IQueryable<Contract> GetOrderedList(string sortOrder, IQueryable<Contract> contracts)
         {
-            string sortFormat = "";
+            string sortFormat = string.Empty;
             if (sortOrder == null)
             {
                 sortFormat = "desc";
@@ -58,10 +78,10 @@ namespace SpravaSmluv.Controllers
             ViewBag.InstitutionSortParm = !(sortFormat == "desc") ? "institution_desc" : "institution_asc";
             ViewBag.ClientSortParm = !(sortFormat == "desc") ? "client_desc" : "client_asc";
             ViewBag.ContractManagerSortParm = !(sortFormat == "desc") ? "contractmanager_desc" : "contractmanager_asc";
-            //ViewBag.ClosureDateSortParm = !(sortFormat == "desc") ? "closuredate_desc" : "closuredate_asc";
-            //ViewBag.ExpirationDateSortParm = !(sortFormat == "desc") ? "expirationdate_desc" : "expirationdate_asc";
-            //ViewBag.TerminationDateSortParm = !(sortFormat == "desc") ? "terminationdate_desc" : "terminationdate_asc";
 
+            // ViewBag.ClosureDateSortParm = !(sortFormat == "desc") ? "closuredate_desc" : "closuredate_asc";
+            // ViewBag.ExpirationDateSortParm = !(sortFormat == "desc") ? "expirationdate_desc" : "expirationdate_asc";
+            // ViewBag.TerminationDateSortParm = !(sortFormat == "desc") ? "terminationdate_desc" : "terminationdate_asc";
             contracts = sortOrder switch
             {
                 "evidencenumber_desc" => contracts.OrderByDescending(c => c.EvidenceNumber),
@@ -71,14 +91,15 @@ namespace SpravaSmluv.Controllers
                 "evidencenumber_asc" => contracts.OrderBy(c => c.EvidenceNumber),
                 "institution_asc" => contracts.OrderBy(c => c.Institution),
                 "client_asc" => contracts.OrderBy(c => c.Client.FullName),
-               // "contractmanager_asc" => contracts.OrderBy(c => c.ContractManager),
-                //"closuredate_desc" => contracts.OrderByDescending(c => c.ClosureDate),
-                //"expirationdate_desc" => contracts.OrderByDescending(c => c.ExpirationDate),
-                //"terminationdate_desc" => contracts.OrderByDescending(c => c.TerminationDate),
-                //"closuredate_asc" => contracts.OrderBy(c => c.ClosureDate),
-                //"expirationdate_asc" => contracts.OrderBy(c => c.ExpirationDate),
-                //"terminationdate_asc" => contracts.OrderBy(c => c.TerminationDate),
-                //"Date" => contracts.OrderBy(c => c.ClosureDate),
+                "contractmanager_asc" => contracts.OrderBy(c => c.ContractManager),
+
+                // "closuredate_desc" => contracts.OrderByDescending(c => c.ClosureDate),
+                // "expirationdate_desc" => contracts.OrderByDescending(c => c.ExpirationDate),
+                // "terminationdate_desc" => contracts.OrderByDescending(c => c.TerminationDate),
+                // "closuredate_asc" => contracts.OrderBy(c => c.ClosureDate),
+                // "expirationdate_asc" => contracts.OrderBy(c => c.ExpirationDate),
+                // "terminationdate_asc" => contracts.OrderBy(c => c.TerminationDate),
+                // "Date" => contracts.OrderBy(c => c.ClosureDate),
                 _ => contracts.OrderBy(c => c.EvidenceNumber),
             };
             return contracts;

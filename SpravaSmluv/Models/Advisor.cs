@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace SpravaSmluv.Models
+﻿namespace SpravaSmluv.Models
 {
+    using System;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using System.Linq;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+
     [Index(nameof(Email), IsUnique = true)]
     [Index(nameof(PersonalIdentificationNumber), IsUnique = true)]
-    [Index(nameof(PhoneNumber), IsUnique =  true)]
+    [Index(nameof(PhoneNumber), IsUnique = true)]
     public class Advisor
     {
         public int Id { get; set; }
