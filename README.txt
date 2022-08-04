@@ -1,0 +1,1 @@
+Aplikace Správa smluv umožňuje vytvoření nových klientů, poradců a smluv. Zároveň take jejich editaci, detail a odstranění a stažení všech záznamů ve formátu CSV. Dále nabízí filtrování každé entity a to podle různých filtrů a seřazení podle sestupnosti/vzestupnosti.

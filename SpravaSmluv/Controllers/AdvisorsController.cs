@@ -37,10 +37,10 @@
         {
             advisors = filterString switch
             {
-                "Evidenční číslo" => advisors.Where(c => c.FirstName.Contains(searchString)),
-                "Instituce" => advisors.Where(c => c.LastName.Contains(searchString)),
-                "Jméno klienta" => advisors.Where(c => c.Email.Contains(searchString)),
-                "Jméno správce smlouvy" => advisors.Where(c => c.PersonalIdentificationNumber.Contains(searchString)),
+                "Jméno" => advisors.Where(c => c.FirstName.Contains(searchString)),
+                "Přijmení" => advisors.Where(c => c.LastName.Contains(searchString)),
+                "Email" => advisors.Where(c => c.Email.Contains(searchString)),
+                "Rodné číslo" => advisors.Where(c => c.PersonalIdentificationNumber.Contains(searchString)),
                 _ => advisors.Where(c => c.FirstName.Contains(searchString) || c.LastName.Contains(searchString) || c.Email.Contains(searchString) || c.PersonalIdentificationNumber.Contains(searchString)),
             };
             return advisors;

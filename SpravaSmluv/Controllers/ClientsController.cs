@@ -36,11 +36,11 @@ namespace SpravaSmluv.Controllers
         {
             clients = filterString switch
             {
-                "Evidenční číslo" => clients.Where(c => c.FirstName.Contains(searchString)),
-                "Instituce" => clients.Where(c => c.LastName.Contains(searchString)),
-                "Jméno klienta" => clients.Where(c => c.Email.Contains(searchString)),
-                "Jméno správce smlouvy" => clients.Where(c => c.PersonalIdentificationNumber.Contains(searchString)),
-                _ => clients.Where(c => c.FirstName.Contains(searchString) || c.LastName.Contains(searchString) || c.Email.Contains(searchString) || c.PersonalIdentificationNumber.Contains(searchString)),
+                "Jméno" => clients.Where(c => c.FirstName.Contains(searchString)),
+                "Přijmení" => clients.Where(c => c.LastName.Contains(searchString)),
+                "Email" => clients.Where(c => c.Email.Contains(searchString)),
+                "Rodné číslo" => clients.Where(c => c.PersonalIdentificationNumber.Contains(searchString)),
+            _ => clients.Where(c => c.FirstName.Contains(searchString) || c.LastName.Contains(searchString) || c.Email.Contains(searchString) || c.PersonalIdentificationNumber.Contains(searchString)),
             };
             return clients;
         }
