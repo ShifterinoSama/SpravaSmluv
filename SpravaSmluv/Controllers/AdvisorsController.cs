@@ -21,15 +21,29 @@
         }
 
         // GET: Advisors
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string filterString)
         {
             var advisors = from c in _context.Advisors select c;
+            ViewBag.FilterList = new List<string>() { "Jméno", "Přijmení", "Email", "Rodné číslo" };
             if (!String.IsNullOrEmpty(searchString))
             {
-                advisors = advisors.Where(c => c.FirstName.Contains(searchString) || c.LastName.Contains(searchString) || c.Email.Contains(searchString) || c.PhoneNumber.Contains(searchString));
+                advisors = GetSearchItems(searchString, filterString, advisors);
             }
             IQueryable<Advisor> orderedAdvisors = GetOrderedList(sortOrder, advisors);
             return View(await orderedAdvisors.ToListAsync());
+        }
+
+        private static IQueryable<Advisor> GetSearchItems(string searchString, string filterString, IQueryable<Advisor> advisors)
+        {
+            advisors = filterString switch
+            {
+                "Evidenční číslo" => advisors.Where(c => c.FirstName.Contains(searchString)),
+                "Instituce" => advisors.Where(c => c.LastName.Contains(searchString)),
+                "Jméno klienta" => advisors.Where(c => c.Email.Contains(searchString)),
+                "Jméno správce smlouvy" => advisors.Where(c => c.PersonalIdentificationNumber.Contains(searchString)),
+                _ => advisors.Where(c => c.FirstName.Contains(searchString) || c.LastName.Contains(searchString) || c.Email.Contains(searchString) || c.PersonalIdentificationNumber.Contains(searchString)),
+            };
+            return advisors;
         }
 
         private IQueryable<Advisor> GetOrderedList(string sortOrder, IQueryable<Advisor> advisors)
@@ -65,11 +79,11 @@
                 //"phonenumber_desc" => advisors.OrderByDescending(c => c.PhoneNumber),
                 "personalidnumber_desc" => advisors.OrderByDescending(c => c.PersonalIdentificationNumber),
                 //"age_desc" => advisors.OrderByDescending(c => c.Age),
-                "firstname_asc" => advisors.OrderByDescending(c => c.FirstName),
-                "lastname_asc" => advisors.OrderByDescending(c => c.LastName),
-                "email_asc" => advisors.OrderByDescending(c => c.Email),
+                "firstname_asc" => advisors.OrderBy(c => c.FirstName),
+                "lastname_asc" => advisors.OrderBy(c => c.LastName),
+                "email_asc" => advisors.OrderBy(c => c.Email),
                 //"phonenumber_asc" => advisors.OrderByDescending(c => c.PhoneNumber),
-                "personalidnumber_asc" => advisors.OrderByDescending(c => c.PersonalIdentificationNumber),
+                "personalidnumber_asc" => advisors.OrderBy(c => c.PersonalIdentificationNumber),
                 //"age_asc" => advisors.OrderByDescending(c => c.Age),
                 _ => advisors.OrderBy(c => c.FirstName),
             };

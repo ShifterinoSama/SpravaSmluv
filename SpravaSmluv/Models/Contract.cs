@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -8,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace SpravaSmluv.Models
 {
-    [Index(nameof(EvidenceNumber), IsUnique = true)]
+    
     public class Contract
     {
         [Key]
         public int Id { get; set; }
-        
+
+        [Index(nameof(EvidenceNumber), IsUnique = true)]
         [Display(Name = "Evidenční číslo")]
         public string EvidenceNumber { get; set; }
 

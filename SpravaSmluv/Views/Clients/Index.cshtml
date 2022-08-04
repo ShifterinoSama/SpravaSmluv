@@ -9,15 +9,16 @@
 
 <p>
     @Html.ActionLink("Vytvořit nový profil klienta", "Create")
-    @*<a asp-action="Create">Create New</a>*@
 </p>
 
 @using (Html.BeginForm())
 {
-    <p>
-        @Html.TextBox("SearchString")
-        <input type="submit" value="Vyhledat" />
-    </p>
+<p>
+    @Html.DropDownList("filterString", new SelectList(ViewBag.FilterList), "-Vyberte filtr vyhledávání-", new { @class = "form-control" })
+    <input type="hidden" />
+    @Html.TextBox("SearchString")
+    <input type="submit" value="Vyhledat" />
+</p>
 
     <p>
         Počet výsledků: @Model.Count()

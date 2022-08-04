@@ -21,17 +21,29 @@ namespace SpravaSmluv.Controllers
         }
 
         // GET: Clients
-        public async Task<IActionResult> Index(string sortOrder, string searchString)
+        public async Task<IActionResult> Index(string sortOrder, string searchString, string filterString)
         {
             var clients = from c in _context.Clients select c;
-            if (!String.IsNullOrEmpty(searchString))
+            ViewBag.FilterList = new List<string>() { "Jméno", "Přijmení", "Email","Rodné číslo" };
+            if (!string.IsNullOrEmpty(searchString))
             {
-                clients = clients.Where(c => c.FirstName.Contains(searchString) || c.LastName.Contains(searchString) || c.Email.Contains(searchString) || c.PhoneNumber.Contains(searchString));
+                clients = GetSearchItems(searchString, filterString, clients);
             }
             IQueryable<Client> orderedClients = GetOrderedList(sortOrder, clients);
             return View(await orderedClients.ToListAsync());
         }
-
+        private static IQueryable<Client> GetSearchItems(string searchString, string filterString, IQueryable<Client> clients)
+        {
+            clients = filterString switch
+            {
+                "Evidenční číslo" => clients.Where(c => c.FirstName.Contains(searchString)),
+                "Instituce" => clients.Where(c => c.LastName.Contains(searchString)),
+                "Jméno klienta" => clients.Where(c => c.Email.Contains(searchString)),
+                "Jméno správce smlouvy" => clients.Where(c => c.PersonalIdentificationNumber.Contains(searchString)),
+                _ => clients.Where(c => c.FirstName.Contains(searchString) || c.LastName.Contains(searchString) || c.Email.Contains(searchString) || c.PersonalIdentificationNumber.Contains(searchString)),
+            };
+            return clients;
+        }
         private IQueryable<Client> GetOrderedList(string sortOrder, IQueryable<Client> clients)
         {
             string sortFormat = "";
@@ -138,12 +150,6 @@ namespace SpravaSmluv.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool isEmailTaken = _context.Clients.Any(c => c.Email == client.Email);
-                if (isEmailTaken)
-                {
-                    this.ModelState.AddModelError("Email", "Tento email již někdo používá!");
-                    return View(client);
-                }
                 _context.Add(client);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -183,12 +189,6 @@ namespace SpravaSmluv.Controllers
             {
                 try
                 {
-                    bool isEmailTaken = _context.Clients.Any(c => c.Email == client.Email);
-                    if (isEmailTaken)
-                    {
-                        this.ModelState.AddModelError("Email", "Tento email již někdo používá!");
-                        return View(client);
-                    }
                     _context.Update(client);
                     await _context.SaveChangesAsync();
                 }

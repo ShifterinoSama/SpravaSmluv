@@ -17,11 +17,6 @@ namespace SpravaSmluv.Controllers
     public class ContractsController : Controller
     {
         private readonly ContractManagmentContext _context;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ContractsController"/> class.
-        /// </summary>
-        /// <param name="context"></param>
         public ContractsController(ContractManagmentContext context)
         {
             _context = context;
